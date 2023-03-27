@@ -13,10 +13,10 @@ WORKDIR /app
 EXPOSE 8000
 
 RUN apk update && \
-    apk add --no-cache postgresql-client ca-certificates && \
+    apk add --no-cache postgresql-client ca-certificates  jpeg-dev && \
     update-ca-certificates && \
     apk add --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \
+        build-base postgresql-dev musl-dev zlib zlib-dev && \
     python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
@@ -28,7 +28,11 @@ RUN apk update && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user
+        django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 ENV PATH="/py/bin:$PATH"
 
